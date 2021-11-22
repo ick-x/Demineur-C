@@ -14,7 +14,7 @@ void initialiser(int **g, unsigned int lignes, unsigned int colonnes) {
     }
 }
 
-void afficher_grille(int **g, unsigned int& lignes, unsigned int& colonnes) 
+void afficher_grille(int **g, unsigned int& lignes, unsigned int& colonnes)  
 {
     
     for (unsigned int i = 1; i <= colonnes; ++i) {
