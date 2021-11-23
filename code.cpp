@@ -3,27 +3,27 @@
  
 using namespace std;
  
-
+typedef char Item;
  
-void initialiser(int ***g, unsigned int& lignes, unsigned int& colonnes)
+void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
 {
     // Initialise la grille
-    *g = new int*[colonnes];
+    *g = new Item*[colonnes];
     for (unsigned int i = 0; i < colonnes; ++i)
     {
-        (*g)[i] = new int[lignes];
+        (*g)[i] = new Item[lignes];
     }
     for (unsigned int l = 0; l < lignes; l++)
     {
         for (unsigned int c = 0; c < colonnes; c++)
         {
-            (*g)[l][c]=0;
+            (*g)[l][c]='.';
         }
     }
 }
  
  
-void afficher_grille(int **g, unsigned int& lignes, unsigned int& colonnes)
+void afficher_grille(Item **g, unsigned int& lignes, unsigned int& colonnes)
 { 
     // Affiche la grille
     for (unsigned int i = 1; i <= colonnes; ++i) 
@@ -36,7 +36,7 @@ void afficher_grille(int **g, unsigned int& lignes, unsigned int& colonnes)
     {
         for (unsigned int c = 0; c < colonnes; c++)
         {
-            cout << "| " << g[l][c] << " ";
+            cout << "| " << g[l][c] << " "; 
         }
         cout <<"|" << endl;
         for (unsigned int i = 1; i <= colonnes; ++i) 
@@ -47,11 +47,13 @@ void afficher_grille(int **g, unsigned int& lignes, unsigned int& colonnes)
     }
 }
 
-void show_position(int** g, unsigned int& lignes, unsigned int& colonnes) 
+void show_position(Item** g, unsigned int& lignes, unsigned int& colonnes) 
 {
-    // Cette fonction sert juste à vérifier si les cellues de la matrice correspondent bien à leur position réelle 
-    // Donc elle sert pas à grande chose en vrai
+    // Cette fonction sert juste à vérifier si les cellues de la matrice 
+    // correspondent bien à leur position réelle. 
+
     int position(-1);
+    int p(0);
 
     cout << "cellule -> position : " << endl << endl;
 
@@ -60,59 +62,65 @@ void show_position(int** g, unsigned int& lignes, unsigned int& colonnes)
         for (int c = 0; c < colonnes; c++)
         {
             position += 1;
-            cout << "grille.[" << l << "][" << c << "]" << " -> " << position << endl;
+            
+            cout << "grille[" << l << "][" << c << "]" << " -> " << position << endl;
+
         }
     }
+
 }
 
-void get_position(int **g, unsigned int& lignes, unsigned int& colonnes, unsigned int& p) 
+void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigned int& mine) 
 {
     unsigned int position(-1);
+    char marquage_mine = 120;
     
     for (int l = 0; l < lignes; l++) 
     {
         for (int c = 0; c < colonnes; c++)
         {
             position += 1; 
-            if (position == p) 
+            if (position == mine)
             {
-                // Ce 'if' servira à récupérer les coordonnées de la cellule correspondant à une position en entrée
-                // Il faudra donc remplacer le 'cout' par une autre instruction
-                cout << "la position " << p << " est dans la cellule " << "grille.[" << l << "][" << c << "]" << endl;
+                g[l][c] = marquage_mine;   
             }   
         }
     }     
 }
+
  
 int main()
 {
-    unsigned int lignes, colonnes, position;
+    unsigned int lignes, colonnes, mine_marquee;
  
-    int** grille;
+    Item** grille;
     
-    cout << "lignes : ";    //
-    cin >> lignes;          // 
-                            // Ces quelques lignes serviront pour
-    cout << "colonnes : ";  // la programmation mais pour le projet
-    cin >> colonnes;        // final il faudra utiliser celle en 
-                            // commentaire en dessous (pour le in)
-    cout << "position : ";  //  
-    cin >> position;        //
+    cout << "Lignes : ";            //
+    cin >> lignes;                  // 
+                                    // Ces quelques lignes serviront pour
+    cout << "COlonnes : ";          // la programmation mais pour le projet
+    cin >> colonnes;                // final il faudra utiliser celle en 
+                                    // commentaire en dessous (pour le 'in')
+    cout << "Marquer une mine : ";  //  
+    cin >> mine_marquee;            //
     
     
     //cin >> lignes >> colonnes >> position;
 
-    assert (position < (lignes * colonnes));
+    assert (mine_marquee < (lignes * colonnes));
 
     cout << endl;
  
     initialiser(&grille, lignes, colonnes);
     afficher_grille(grille, lignes, colonnes);
+
     cout << endl;
     show_position(grille, lignes, colonnes);
-    cout << endl << "get_position() : " << endl << endl;
-    get_position(grille, lignes, colonnes, position);
     cout << endl;
+    marquer_mine(grille, lignes, colonnes, mine_marquee);
+    cout << endl;
+    afficher_grille(grille, lignes, colonnes);
+
  
     return 0;
 }
