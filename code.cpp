@@ -120,7 +120,6 @@ int main()
     marquer_mine(grille, lignes, colonnes, mine_marquee);
     cout << endl;
     afficher_grille(grille, lignes, colonnes);
-    //GG renoi
  
     return 0;
 }
