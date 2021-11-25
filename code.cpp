@@ -9,6 +9,7 @@ void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
 {
 	// Initialise la grille
 	*g = new Item*[colonnes];
+	char case_cache = 46;
 	for (unsigned int i = 0; i < colonnes; ++i)
 	{
 		(*g)[i] = new Item[lignes];
@@ -17,7 +18,7 @@ void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
 	{
 		for (unsigned int c = 0; c < colonnes; c++)
 		{
-			(*g)[l][c] = '.';
+			(*g)[l][c] = case_cache;
 		}
 	}
 }
@@ -71,7 +72,7 @@ void show_position(Item** g, unsigned int& lignes, unsigned int& colonnes)
 void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigned int& mine)
 {
 	unsigned int position(-1);
-	char marquage_mine = 120;
+	char marquage_mine = 120;		//Code ascii de "x"
 
 	for (int l = 0; l < lignes; l++)
 	{
@@ -86,10 +87,26 @@ void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsign
 	}
 }
 
+void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigned int& demasque)
+{
+	unsigned int position(-1);
+	char case_vide = 32;			//Code ascii de l'espace
+	for (int l = 0; l < lignes; l++)
+	{
+		for (int c = 0; c < colonnes; c++)
+		{
+			position += 1;
+			if (position == demasque)
+			{
+				g[l][c] = case_vide;
+			}
+		}
+	}
+}
 
 int main()
 {
-	unsigned int lignes, colonnes, mine_marquee;
+	unsigned int lignes, colonnes, mine_marquee, case_demasquee;
 
 	Item** grille;
 
@@ -102,10 +119,13 @@ int main()
 	cout << "Marquer une mine : ";  //  
 	cin >> mine_marquee;            //
 
+	cout << "Case a demasquer :";
+	cin >> case_demasquee;
 
 	//cin >> lignes >> colonnes >> position;
 
-	assert(mine_marquee < (lignes * colonnes));
+	assert(mine_marquee < lignes * colonnes);
+	assert(case_demasquee < lignes * colonnes);
 
 	cout << endl;
 
@@ -113,11 +133,16 @@ int main()
 	afficher_grille(grille, lignes, colonnes);
 
 	cout << endl;
-	show_position(grille, lignes, colonnes);
-	cout << endl;
+	//show_position(grille, lignes, colonnes);
+    
 	marquer_mine(grille, lignes, colonnes, mine_marquee);
 	cout << endl;
 	afficher_grille(grille, lignes, colonnes);
+	cout << endl;
+	demasquer_case(grille, lignes, colonnes, case_demasquee);
+	cout << endl;
+	afficher_grille(grille, lignes, colonnes);
+
 
 	system("pause");
 	return 0;
