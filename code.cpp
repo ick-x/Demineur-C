@@ -155,7 +155,6 @@ int main()
 /*
     char lettre;
     int nombre;
-
     cin >> lettre >> nombre;
 
     cout << lettre << " " << nombre;
