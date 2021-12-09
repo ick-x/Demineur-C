@@ -10,7 +10,6 @@ struct Etat
 	enum {CAHCEE, DEVOILEE, MARQUEE, MINE, VIDE}; // Définition des différents états d'une case
 };
 
-
 void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
 {
 	// Initialise la grille
