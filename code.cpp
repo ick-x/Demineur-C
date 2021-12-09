@@ -5,16 +5,15 @@ using namespace std;
 
 typedef char Item;
 
-struct Etat
+enum Etat
 {
-	enum {CAHCEE, DEVOILEE, MARQUEE, MINE, VIDE}; // Définition des différents états d'une case
+	CACHEE = 46, DEVOILEE, MARQUEE = 120, MINE = 109 // Définition des différents états d'une case
 };
 
 void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
 {
 	// Initialise la grille
 	*g = new Item*[colonnes];
-	char case_cache = 46;
 	for (unsigned int i = 0; i < colonnes; ++i)
 	{
 		(*g)[i] = new Item[lignes];
@@ -23,7 +22,7 @@ void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
 	{
 		for (unsigned int c = 0; c < colonnes; c++)
 		{
-			(*g)[l][c] = case_cache;
+			(*g)[l][c] = Etat::CACHEE;
 		}
 	}
 }
@@ -77,7 +76,6 @@ void show_position(Item** g, unsigned int& lignes, unsigned int& colonnes)
 void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigned int& mine)
 {
 	unsigned int position(-1);
-	char marquage_mine = 120;		//Code ascii de "x"
 
 	for (int l = 0; l < lignes; l++)
 	{
@@ -86,7 +84,7 @@ void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsign
 			position += 1;
 			if (position == mine)
 			{
-				g[l][c] = marquage_mine;
+				g[l][c] = Etat::MARQUEE;
 			}
 		}
 	}
@@ -152,3 +150,14 @@ int main()
 	system("pause");
 	return 0;
 }
+
+
+/*
+    char lettre;
+    int nombre;
+
+    cin >> lettre >> nombre;
+
+    cout << lettre << " " << nombre;
+    return 0;
+*/
