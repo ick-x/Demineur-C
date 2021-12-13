@@ -5,23 +5,17 @@ using namespace std;
 
 typedef char Item;
 
-enum Etat
-{														
-	VIDE, MINE
+typedef enum {VIDE, MINE} Etat;
+
+typedef enum {DEVOILEE, CACHEE = 46, MARQUEE = 109} Statut;
+
+typedef enum {NEUTRE = 32, VOISINE} Valeur;
+
+struct Case {
+    Etat etat_case = Etat::VIDE;
+    Statut statut_case = Statut::CACHEE;
+	Valeur valeur_case = Valeur::NEUTRE;
 };
-
-enum Statut 
-{
-	DEVOILEE, CACHEE, MARQUEE
-};
-
-enum Valeur
-{
-	NEUTRE, 
-};
-
-typedef struct {Etat etat_case; Valeur valeur_case; Statut statut_case} Case;
-
 
 
 void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
@@ -36,8 +30,7 @@ void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
 	{
 		for (unsigned int c = 0; c < colonnes; c++)
 		{
-			(*g)[l][c] = Case::etat_case = VIDE;
-			(*g)[l][c] = Case::statut_case = CACHEE;
+			(*g)[l][c] = CACHEE;
 		}
 	}
 }
@@ -106,7 +99,7 @@ void placer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigne
 				position += 1;
 				if (position == mine)
 				{
-					g[l][c] = Etat::MINE;
+					g[l][c] = CACHEE, MINE;
 				}
 			}
 		}
@@ -124,7 +117,7 @@ void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsign
 			position += 1;
 			if (position == mine)
 			{
-				g[l][c] = Case::statut_case = MARQUEE;
+				g[l][c] = MARQUEE;
 			}
 		}
 	}
@@ -140,14 +133,14 @@ void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, unsi
 			position += 1;
 			if (position == demasque)
 			{	
-				if (g[l][c] == Etat::MINE)
+				if (g[l][c] == MINE)
 				{
 					cout << "Perdu : Mine decouverte" << endl;
 					exit(1);
 				}
 				else 
 				{
-					g[l][c] = Etat::VIDE;
+					g[l][c] = NEUTRE, VIDE;
 
 				}
 			}
@@ -161,12 +154,10 @@ int main()
 
 	Item** grille;
 
-	cout << "Lignes : ";            //
-	cin >> lignes;                  // 
-									// Ces quelques lignes serviront pour
-	cout << "Colonnes : ";          // la programmation mais pour le projet
-	cin >> colonnes;                // final il faudra utiliser celle en 
-									// commentaire en dessous (pour le 'in')  
+	cout << "Lignes : ";           
+	cin >> lignes;                  
+	cout << "Colonnes : ";        
+	cin >> colonnes;               
 	          
 	cout << "Nombre de mines a placer : " ;
 	cin >> nb_mines;
@@ -174,8 +165,8 @@ int main()
 	initialiser(&grille, lignes, colonnes);
 	placer_mine(grille, lignes, colonnes, nb_mines);
 
-	//cout << "Marquer une mine : ";    
-	//cin >> mine_marquee;
+	cout << "Marquer une mine : ";    
+	cin >> mine_marquee;
 
 	cout << "Case a demasquer : ";
 	cin >> case_demasquee;
@@ -186,18 +177,12 @@ int main()
 	assert(case_demasquee < lignes * colonnes);
 
 	cout << endl;
-
-	afficher_grille(grille, lignes, colonnes);
-
-	cout << endl;
 	//show_position(grille, lignes, colonnes);
-    
-	//marquer_mine(grille, lignes, colonnes, mine_marquee);
-	//cout << endl;
-	//afficher_grille(grille, lignes, colonnes);
+
+	
+	marquer_mine(grille, lignes, colonnes, mine_marquee);
 	cout << endl;
 	demasquer_case(grille, lignes, colonnes, case_demasquee);
-	cout << endl;
 	afficher_grille(grille, lignes, colonnes);
 
 
