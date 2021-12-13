@@ -6,9 +6,23 @@ using namespace std;
 typedef char Item;
 
 enum Etat
-{
-	CACHEE = 46, DEVOILEE, MARQUEE = 120, MINE = 109 // Définition des différents états d'une case
+{														
+	VIDE, MINE
 };
+
+enum Statut 
+{
+	DEVOILEE, CACHEE, MARQUEE
+};
+
+enum Valeur
+{
+	NEUTRE, 
+};
+
+typedef struct {Etat etat_case; Valeur valeur_case; Statut statut_case} Case;
+
+
 
 void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
 {
@@ -22,7 +36,8 @@ void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
 	{
 		for (unsigned int c = 0; c < colonnes; c++)
 		{
-			(*g)[l][c] = Etat::CACHEE;
+			(*g)[l][c] = Case::etat_case = VIDE;
+			(*g)[l][c] = Case::statut_case = CACHEE;
 		}
 	}
 }
@@ -33,7 +48,7 @@ void afficher_grille(Item **g, unsigned int& lignes, unsigned int& colonnes)
 	// Affiche la grille
 	for (unsigned int i = 1; i <= colonnes; ++i)
 	{
-		cout << " ---";
+		cout << " ___";
 	}
 	cout << endl;
 
@@ -46,12 +61,12 @@ void afficher_grille(Item **g, unsigned int& lignes, unsigned int& colonnes)
 		cout << "|" << endl;
 		for (unsigned int i = 1; i <= colonnes; ++i)
 		{
-			cout << " ---";
+			cout << " ___";
 		}
 		cout << endl;
 	}
 }
-
+      
 void show_position(Item** g, unsigned int& lignes, unsigned int& colonnes)
 {
 	// Cette fonction sert juste à vérifier si les cellules de la matrice 
@@ -73,9 +88,34 @@ void show_position(Item** g, unsigned int& lignes, unsigned int& colonnes)
 	}
 }
 
+void placer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigned int nb_mines)
+{
+	for (int i = 0; i < nb_mines; i++) 
+	{
+		int mine;
+
+		cout << "Placer une mine : ";
+		cin >> mine;
+		
+		int position(-1);
+
+		for (int l = 0; l < lignes; l++)
+		{
+			for (int c = 0; c < colonnes; c++)
+			{
+				position += 1;
+				if (position == mine)
+				{
+					g[l][c] = Etat::MINE;
+				}
+			}
+		}
+	}
+}
+
 void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigned int& mine)
 {
-	unsigned int position(-1);
+	int position(-1);
 
 	for (int l = 0; l < lignes; l++)
 	{
@@ -84,7 +124,7 @@ void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsign
 			position += 1;
 			if (position == mine)
 			{
-				g[l][c] = Etat::MARQUEE;
+				g[l][c] = Case::statut_case = MARQUEE;
 			}
 		}
 	}
@@ -93,15 +133,23 @@ void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsign
 void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigned int& demasque)
 {
 	unsigned int position(-1);
-	char case_vide = 32;			//Code ascii de l'espace
 	for (int l = 0; l < lignes; l++)
 	{
 		for (int c = 0; c < colonnes; c++)
 		{
 			position += 1;
 			if (position == demasque)
-			{
-				g[l][c] = case_vide;
+			{	
+				if (g[l][c] == Etat::MINE)
+				{
+					cout << "Perdu : Mine decouverte" << endl;
+					exit(1);
+				}
+				else 
+				{
+					g[l][c] = Etat::VIDE;
+
+				}
 			}
 		}
 	}
@@ -109,7 +157,7 @@ void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, unsi
 
 int main()
 {
-	unsigned int lignes, colonnes, mine_marquee, case_demasquee;
+	unsigned int lignes, colonnes, mine_marquee, case_demasquee, nb_mines;
 
 	Item** grille;
 
@@ -118,11 +166,18 @@ int main()
 									// Ces quelques lignes serviront pour
 	cout << "Colonnes : ";          // la programmation mais pour le projet
 	cin >> colonnes;                // final il faudra utiliser celle en 
-									// commentaire en dessous (pour le 'in')
-	cout << "Marquer une mine : ";  //  
-	cin >> mine_marquee;            //
+									// commentaire en dessous (pour le 'in')  
+	          
+	cout << "Nombre de mines a placer : " ;
+	cin >> nb_mines;
 
-	cout << "Case a demasquer :";
+	initialiser(&grille, lignes, colonnes);
+	placer_mine(grille, lignes, colonnes, nb_mines);
+
+	//cout << "Marquer une mine : ";    
+	//cin >> mine_marquee;
+
+	cout << "Case a demasquer : ";
 	cin >> case_demasquee;
 
 	//cin >> lignes >> colonnes >> position;
@@ -132,22 +187,20 @@ int main()
 
 	cout << endl;
 
-	initialiser(&grille, lignes, colonnes);
 	afficher_grille(grille, lignes, colonnes);
 
 	cout << endl;
 	//show_position(grille, lignes, colonnes);
     
-	marquer_mine(grille, lignes, colonnes, mine_marquee);
-	cout << endl;
-	afficher_grille(grille, lignes, colonnes);
+	//marquer_mine(grille, lignes, colonnes, mine_marquee);
+	//cout << endl;
+	//afficher_grille(grille, lignes, colonnes);
 	cout << endl;
 	demasquer_case(grille, lignes, colonnes, case_demasquee);
 	cout << endl;
 	afficher_grille(grille, lignes, colonnes);
 
 
-	system("pause");
 	return 0;
 }
 
