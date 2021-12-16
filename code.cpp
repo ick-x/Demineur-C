@@ -3,13 +3,11 @@
 
 using namespace std;
 
-typedef char Item;
-
-typedef enum {VIDE, MINE} Etat;
+typedef enum {VIDE = 32, MINE = 120} Etat;
 
 typedef enum {DEVOILEE, CACHEE = 46, MARQUEE = 109} Statut;
 
-typedef enum {NEUTRE = 32, VOISINE} Valeur;
+typedef enum {NEUTRE = 46, VOISINE} Valeur;
 
 struct Case {
     Etat etat_case = Etat::VIDE;
@@ -17,6 +15,7 @@ struct Case {
 	Valeur valeur_case = Valeur::NEUTRE;
 };
 
+typedef Case Item;
 
 void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
 {
@@ -30,7 +29,8 @@ void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
 	{
 		for (unsigned int c = 0; c < colonnes; c++)
 		{
-			(*g)[l][c] = CACHEE;
+			(*g)[l][c].statut_case = CACHEE;
+			(*g)[l][c].etat_case = VIDE;
 		}
 	}
 }
@@ -49,7 +49,7 @@ void afficher_grille(Item **g, unsigned int& lignes, unsigned int& colonnes)
 	{
 		for (unsigned int c = 0; c < colonnes; c++)
 		{
-			cout << "| " << g[l][c] << " ";
+			cout << "| " << (char)g[l][c].statut_case << " ";
 		}
 		cout << "|" << endl;
 		for (unsigned int i = 1; i <= colonnes; ++i)
@@ -66,9 +66,8 @@ void show_position(Item** g, unsigned int& lignes, unsigned int& colonnes)
 	// correspondent bien à leur position réelle. 
 
 	int position(-1);
-	int p(0);
 
-	cout << "cellule -> position : " << endl << endl;
+	cout << "cellule -> position -> contenu : " << endl << endl;
 
 	for (int l = 0; l < lignes; l++)
 	{
@@ -76,7 +75,7 @@ void show_position(Item** g, unsigned int& lignes, unsigned int& colonnes)
 		{
 			position += 1;
 
-			cout << "grille[" << l << "][" << c << "]" << " -> " << position << endl;
+			cout << "grille[" << l << "][" << c << "]" << " -> " << position << " -> " << g[l][c].statut_case << endl;
 		}
 	}
 }
@@ -99,7 +98,8 @@ void placer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigne
 				position += 1;
 				if (position == mine)
 				{
-					g[l][c] = CACHEE, MINE;
+					g[l][c].etat_case = MINE;
+					g[l][c].statut_case = CACHEE;
 				}
 			}
 		}
@@ -117,7 +117,7 @@ void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsign
 			position += 1;
 			if (position == mine)
 			{
-				g[l][c] = MARQUEE;
+				g[l][c].statut_case = MARQUEE;
 			}
 		}
 	}
@@ -125,7 +125,7 @@ void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsign
 
 void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigned int& demasque)
 {
-	unsigned int position(-1);
+	int position(-1);
 	for (int l = 0; l < lignes; l++)
 	{
 		for (int c = 0; c < colonnes; c++)
@@ -133,14 +133,15 @@ void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, unsi
 			position += 1;
 			if (position == demasque)
 			{	
-				if (g[l][c] == MINE)
+				if (g[l][c].etat_case == MINE)
 				{
 					cout << "Perdu : Mine decouverte" << endl;
 					exit(1);
 				}
 				else 
 				{
-					g[l][c] = NEUTRE, VIDE;
+					g[l][c].statut_case = DEVOILEE;
+					g[l][c].etat_case = VIDE;
 
 				}
 			}
@@ -177,10 +178,14 @@ int main()
 	assert(case_demasquee < lignes * colonnes);
 
 	cout << endl;
-	//show_position(grille, lignes, colonnes);
+	show_position(grille, lignes, colonnes);
+
 
 	
 	marquer_mine(grille, lignes, colonnes, mine_marquee);
+
+	afficher_grille(grille, lignes, colonnes);
+
 	cout << endl;
 	demasquer_case(grille, lignes, colonnes, case_demasquee);
 	afficher_grille(grille, lignes, colonnes);
