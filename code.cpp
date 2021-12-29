@@ -123,7 +123,76 @@ void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsign
 	}
 }
 
-void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigned int& demasque)
+void voisine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& demasque) {
+	int position(-1);
+	for (int l = 0; l < lignes; l++)
+	{
+		for (int c = 0; c < colonnes; c++)
+		{
+			position += 1;
+			if (position == demasque)
+			{
+				c++;
+				position++;
+				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE);
+					else { g[l][c].statut_case = DEVOILEE; voisine(g, lignes, colonnes, position); }
+				}
+
+				l--;
+				position -= lignes;
+				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE);
+					else { g[l][c].statut_case = DEVOILEE; voisine(g, lignes, colonnes, position); }
+				}
+
+				c--;
+				position--;
+				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE);
+					else { g[l][c].statut_case = DEVOILEE; voisine(g, lignes, colonnes, position); }
+				}
+				
+				c--;
+				position--;
+				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE);
+					else { g[l][c].statut_case = DEVOILEE; voisine(g, lignes, colonnes, position); }
+				}
+
+				l++;
+				position += lignes;
+				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE);
+					else { g[l][c].statut_case = DEVOILEE; voisine(g, lignes, colonnes, position); }
+				}
+
+				l++;
+				position += lignes;
+				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE);
+					else { g[l][c].statut_case = DEVOILEE; voisine(g, lignes, colonnes, position); }
+				}
+
+				c++;
+				position++;
+				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE);
+					else { g[l][c].statut_case = DEVOILEE; voisine(g, lignes, colonnes, position); }
+				}
+
+				c++;
+				position++;
+				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE);
+					else { g[l][c].statut_case = DEVOILEE; voisine(g, lignes, colonnes, position); }
+				}
+			}
+		}
+	}
+}
+
+void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, int& demasque)
 {
 	int position(-1);
 	for (int l = 0; l < lignes; l++)
@@ -136,13 +205,13 @@ void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, unsi
 				if (g[l][c].etat_case == MINE)
 				{
 					cout << "Perdu : Mine decouverte" << endl;
+					system("pause");
 					exit(1);
 				}
 				else
 				{
 					g[l][c].statut_case = DEVOILEE;
-					g[l][c].etat_case = VIDE;
-
+					voisine(g, lignes, colonnes, demasque);
 				}
 			}
 		}
@@ -151,7 +220,8 @@ void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, unsi
 
 int main()
 {
-	unsigned int lignes, colonnes, mine_marquee, case_demasquee, nb_mines;
+	unsigned int lignes, colonnes, mine_marquee, nb_mines;
+	int case_demasquee;
 
 	Item** grille;
 
@@ -179,8 +249,6 @@ int main()
 
 	cout << endl;
 	show_position(grille, lignes, colonnes);
-
-
 
 	marquer_mine(grille, lignes, colonnes, mine_marquee);
 
