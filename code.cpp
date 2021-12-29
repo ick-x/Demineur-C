@@ -3,15 +3,15 @@
 
 using namespace std;
 
-typedef enum {VIDE = 32, MINE = 120} Etat;
+typedef enum { VIDE = 32, MINE = 120 } Etat;
 
-typedef enum {DEVOILEE, CACHEE = 46, MARQUEE = 109} Statut;
+typedef enum { DEVOILEE, CACHEE = 46, MARQUEE = 109 } Statut;
 
-typedef enum {NEUTRE = 46, VOISINE} Valeur;
+typedef enum { NEUTRE = 46, VOISINE } Valeur;
 
 struct Case {
-    Etat etat_case = Etat::VIDE;
-    Statut statut_case = Statut::CACHEE;
+	Etat etat_case = Etat::VIDE;
+	Statut statut_case = Statut::CACHEE;
 	Valeur valeur_case = Valeur::NEUTRE;
 };
 
@@ -20,10 +20,10 @@ typedef Case Item;
 void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
 {
 	// Initialise la grille
-	*g = new Item*[colonnes];
-	for (unsigned int i = 0; i < colonnes; ++i)
+	*g = new Item*[lignes];
+	for (unsigned int i = 0; i < lignes; ++i)
 	{
-		(*g)[i] = new Item[lignes];
+		(*g)[i] = new Item[colonnes];
 	}
 	for (unsigned int l = 0; l < lignes; l++)
 	{
@@ -59,7 +59,7 @@ void afficher_grille(Item **g, unsigned int& lignes, unsigned int& colonnes)
 		cout << endl;
 	}
 }
-      
+
 void show_position(Item** g, unsigned int& lignes, unsigned int& colonnes)
 {
 	// Cette fonction sert juste à vérifier si les cellules de la matrice 
@@ -82,13 +82,13 @@ void show_position(Item** g, unsigned int& lignes, unsigned int& colonnes)
 
 void placer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigned int nb_mines)
 {
-	for (int i = 0; i < nb_mines; i++) 
+	for (int i = 0; i < nb_mines; i++)
 	{
 		int mine;
 
 		cout << "Placer une mine : ";
 		cin >> mine;
-		
+
 		int position(-1);
 
 		for (int l = 0; l < lignes; l++)
@@ -132,13 +132,13 @@ void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, unsi
 		{
 			position += 1;
 			if (position == demasque)
-			{	
+			{
 				if (g[l][c].etat_case == MINE)
 				{
 					cout << "Perdu : Mine decouverte" << endl;
 					exit(1);
 				}
-				else 
+				else
 				{
 					g[l][c].statut_case = DEVOILEE;
 					g[l][c].etat_case = VIDE;
@@ -155,18 +155,18 @@ int main()
 
 	Item** grille;
 
-	cout << "Lignes : ";           
-	cin >> lignes;                  
-	cout << "Colonnes : ";        
-	cin >> colonnes;               
-	          
-	cout << "Nombre de mines a placer : " ;
+	cout << "Lignes : ";
+	cin >> lignes;
+	cout << "Colonnes : ";
+	cin >> colonnes;
+
+	cout << "Nombre de mines a placer : ";
 	cin >> nb_mines;
 
 	initialiser(&grille, lignes, colonnes);
 	placer_mine(grille, lignes, colonnes, nb_mines);
 
-	cout << "Marquer une mine : ";    
+	cout << "Marquer une mine : ";
 	cin >> mine_marquee;
 
 	cout << "Case a demasquer : ";
@@ -181,7 +181,7 @@ int main()
 	show_position(grille, lignes, colonnes);
 
 
-	
+
 	marquer_mine(grille, lignes, colonnes, mine_marquee);
 
 	afficher_grille(grille, lignes, colonnes);
@@ -196,10 +196,10 @@ int main()
 
 
 /*
-    char lettre;
-    int nombre;
-    cin >> lettre >> nombre;
+char lettre;
+int nombre;
+cin >> lettre >> nombre;
 
-    cout << lettre << " " << nombre;
-    return 0;
+cout << lettre << " " << nombre;
+return 0;
 */
