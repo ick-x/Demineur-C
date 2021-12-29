@@ -190,7 +190,7 @@ int main()
 	demasquer_case(grille, lignes, colonnes, case_demasquee);
 	afficher_grille(grille, lignes, colonnes);
 
-
+	system("pause");
 	return 0;
 }
 
