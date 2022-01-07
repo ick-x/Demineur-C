@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include <cstdlib>
-#include <stdio.h>
+#include <ctime>
 
 using namespace std;
 
@@ -96,12 +96,13 @@ void placer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigne
 		int pos_max;
 		pos_max = (lignes * colonnes) - 1;
 
-		for (unsigned int i(0); i < nb_mines; ++i) {
+		srand (time(NULL));
 
-			unsigned int pos_mine;
-			pos_mine = rand() % pos_max; 
-
-			cout << pos_mine << " ";
+		for (int i = 0; i < nb_mines; i++)
+		{
+			int pos_mine;
+			pos_mine = rand() % pos_max;
+			cout << pos_mine << " "; 
 		}
 	}
 
