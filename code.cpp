@@ -5,9 +5,9 @@
 
 using namespace std;
 
-typedef enum { VIDE = 32, MINE = 120 } Etat;
+typedef enum { VIDE = 32, MINE = 109 } Etat;
 
-typedef enum { DEVOILEE, CACHEE = 46, MARQUEE = 109 } Statut;
+typedef enum { DEVOILEE, CACHEE = 46, MARQUEE = 120 } Statut;
 
 typedef enum { NEUTRE = 46, UN = 49, DEUX = 50, TROIS = 51, QUATRE = 52, CINQ = 53, SIX = 54, SEPT = 55, HUIT = 56 } Valeur;
 
@@ -27,14 +27,6 @@ void initialiser(Item ***g, unsigned int& lignes, unsigned int& colonnes)
 	{
 		(*g)[i] = new Item[colonnes];
 	}
-	for (unsigned int l = 0; l < lignes; l++)
-	{
-		for (unsigned int c = 0; c < colonnes; c++)
-		{
-			(*g)[l][c].statut_case = CACHEE;
-			(*g)[l][c].etat_case = VIDE;
-		}
-	}
 }
 
 void afficher_grille(Item **g, unsigned int& lignes, unsigned int& colonnes)
@@ -50,10 +42,10 @@ void afficher_grille(Item **g, unsigned int& lignes, unsigned int& colonnes)
 	{
 		for (unsigned int c = 0; c < colonnes; c++)
 		{
-			if (g[l][c].valeur_case != NEUTRE && g[l][c].etat_case != MINE) {
+			if (g[l][c].valeur_case != NEUTRE && g[l][c].etat_case != MINE && g[l][c].statut_case == DEVOILEE) {
 				cout << "| " << (char)g[l][c].valeur_case << " ";
 			}
-			else if(g[l][c].statut_case == DEVOILEE && g[l][c].etat_case == VIDE) {
+			else if(g[l][c].statut_case == DEVOILEE && g[l][c].etat_case == VIDE && g[l][c].valeur_case == NEUTRE) {
 				cout << "| " << (char)g[l][c].etat_case << " ";
 			}
 			else {
@@ -112,7 +104,6 @@ void placer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigne
 		{
 			int mine;
 
-			cout << "Placer une mine : ";
 			cin >> mine;
 
 			int position(-1);
@@ -133,7 +124,19 @@ void placer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigne
 	}
 }
 
-void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsigned int& mine)
+void game_lost(Item** g, unsigned int& lignes, unsigned int& colonnes)
+{
+	for (int l = 0; l < lignes; l++)
+	{
+		for (int c = 0; c < colonnes; c++)
+		{
+			if (g[l][c].etat_case == MINE)
+				g[l][c].statut_case == DEVOILEE;
+		}
+	}	
+}
+
+void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& mine, unsigned int& prob)
 {
 	int position(-1);
 
@@ -144,7 +147,33 @@ void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, unsign
 			position += 1;
 			if (position == mine)
 			{
-				g[l][c].statut_case = MARQUEE;
+				if (g[l][c].etat_case != MINE)
+				{
+					if (prob == 2)
+						game_lost(g, lignes, colonnes);
+					else if (prob == 3) { 
+						cout << "game not won";
+						exit(1);
+					}
+					else if (prob == 4){ 
+						cout << "game lost";
+						exit(2);
+					}
+				}
+
+				else 
+				{ 
+					if (prob == 2)
+						g[l][c].statut_case = MARQUEE;
+					else if (prob == 3) { 
+						cout << "game won";
+						exit(3);
+					}
+					else if (prob == 4) { 
+						cout << "game not lost";
+						exit(4);
+					}
+				}
 			}
 		}
 	}
@@ -279,11 +308,9 @@ void voisine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& demasq
 				l--;
 				position -= lignes;
 				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
-					compteMine(g, lignes, colonnes, position);
 					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE || g[l][c].valeur_case != NEUTRE);
 					
 					else { 
-						g[l][c].statut_case = DEVOILEE;
 						voisine(g, lignes, colonnes, position);
 					}
 				}
@@ -303,11 +330,9 @@ void voisine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& demasq
 				c--;
 				position--;
 				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
-					compteMine(g, lignes, colonnes, position);
 					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE || g[l][c].valeur_case != NEUTRE);
 					
 					else { 
-						g[l][c].statut_case = DEVOILEE; 
 						voisine(g, lignes, colonnes, position); 
 					}
 				}
@@ -327,11 +352,9 @@ void voisine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& demasq
 				l++;
 				position += lignes;
 				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
-					compteMine(g, lignes, colonnes, position);
 					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE || g[l][c].valeur_case != NEUTRE);
 					
 					else { 
-						g[l][c].statut_case = DEVOILEE; 
 						voisine(g, lignes, colonnes, position); 
 					}
 				}
@@ -351,11 +374,9 @@ void voisine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& demasq
 				c++;
 				position++;
 				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
-					compteMine(g, lignes, colonnes, position);
 					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE || g[l][c].valeur_case != NEUTRE);
 					
 					else { 
-						g[l][c].statut_case = DEVOILEE; 
 						voisine(g, lignes, colonnes, position); 
 					}
 				}
@@ -364,7 +385,9 @@ void voisine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& demasq
 	}
 }
 
-void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, int& demasque)
+
+
+void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, int& demasque, unsigned int& prob)
 {
 	int position(-1);
 	for (int l = 0; l < lignes; l++)
@@ -376,15 +399,33 @@ void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, int&
 			{
 				if (g[l][c].etat_case == MINE)
 				{
-					cout << "Perdu : Mine decouverte" << endl;
-					system("pause");
-					exit(1);
+					if (prob == 2)
+						game_lost(g, lignes, colonnes);
+					else if (prob == 3) { 
+						cout << "game not won";
+						exit(5);
+					}	
+					else if (prob == 4) { 
+						cout << "game lost";
+						exit(6);
+					}	
 				}
-				else
+				else 
 				{
-					g[l][c].statut_case = DEVOILEE;
-					compteMine(g, lignes, colonnes, demasque);
-					voisine(g, lignes, colonnes, demasque);
+					if (prob == 2) 
+					{ 
+						g[l][c].statut_case = DEVOILEE;
+						compteMine(g, lignes, colonnes, demasque);
+						voisine(g, lignes, colonnes, demasque);
+					}
+					else if (prob == 3) { 
+						cout << "game won";
+						exit(7);
+					}
+					else if (prob == 4) { 
+						cout << "game not lost";
+						exit(8);
+					}
 				}
 			}
 		}
@@ -417,14 +458,66 @@ void problem() {
 
 	if (prob == 2) {
 		
+		unsigned int lignes, colonnes, nb_mines, nb_coups;
+		cin >> lignes >> colonnes >> nb_mines;
+
+
+		initialiser(&grille, lignes, colonnes);
+		placer_mine(grille, lignes, colonnes, nb_mines, prob);
+
+		cin >> nb_coups;
+
+		for (unsigned int i = 0; i < nb_coups; ++i) 
+		{
+
+			char type_coup;
+			int pos_coup;
+			cin >> type_coup >> pos_coup;
+			
+			if (type_coup == 68) 
+			{
+				demasquer_case(grille, lignes, colonnes, pos_coup, prob);
+			}
+			else if (type_coup == 77)
+			{
+				marquer_mine(grille, lignes, colonnes, pos_coup, prob);
+			}
+
+		}
+
+
+		cout << lignes << " " << colonnes << endl;
+		afficher_grille(grille, lignes, colonnes);
+
 	}
 
-	if (prob == 3) {
-		
-	}
+	if (prob == 3 || prob == 4) {
 
-	if (prob == 4) {
-		
+		unsigned int lignes, colonnes, nb_mines, nb_coups;
+		cin >> lignes >> colonnes >> nb_mines;
+
+
+		initialiser(&grille, lignes, colonnes);
+		placer_mine(grille, lignes, colonnes, nb_mines, prob);
+
+		cin >> nb_coups;
+
+		for (unsigned int i = 0; i < nb_coups; ++i) 
+		{
+
+			char type_coup;
+			int pos_coup;
+			cin >> type_coup >> pos_coup;
+			
+			if (type_coup == 68) 
+			{
+				demasquer_case(grille, lignes, colonnes, pos_coup, prob);
+			}
+			else if (type_coup == 77)
+			{
+				marquer_mine(grille, lignes, colonnes, pos_coup, prob);
+			}
+		}
 	}
 
 	if (prob == 5) {
@@ -446,7 +539,7 @@ int nombre;
 cin >> lettre >> nombre;
 
 cout << lettre << " " << nombre;
-return 0;
+
 
 
 
