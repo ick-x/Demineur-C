@@ -9,7 +9,7 @@ typedef enum { VIDE = 32, MINE = 109 } Etat;
 
 typedef enum { DEVOILEE, CACHEE = 46, MARQUEE = 120 } Statut;
 
-typedef enum { NEUTRE = 46, UN = 49, DEUX = 50, TROIS = 51, QUATRE = 52, CINQ = 53, SIX = 54, SEPT = 55, HUIT = 56 } Valeur;
+typedef enum { NEUTRE = 32, UN = 49, DEUX = 50, TROIS = 51, QUATRE = 52, CINQ = 53, SIX = 54, SEPT = 55, HUIT = 56 } Valeur;
 
 struct Case {
 	Etat etat_case = Etat::VIDE;
@@ -42,7 +42,7 @@ void afficher_grille(Item **g, unsigned int& lignes, unsigned int& colonnes)
 	{
 		for (unsigned int c = 0; c < colonnes; c++)
 		{
-			if (g[l][c].valeur_case != NEUTRE && g[l][c].etat_case != MINE && g[l][c].statut_case == DEVOILEE) {
+			if (g[l][c].statut_case == DEVOILEE && g[l][c].valeur_case != NEUTRE) {
 				cout << "| " << (char)g[l][c].valeur_case << " ";
 			}
 			else if(g[l][c].statut_case == DEVOILEE && g[l][c].etat_case == VIDE && g[l][c].valeur_case == NEUTRE) {
@@ -58,26 +58,6 @@ void afficher_grille(Item **g, unsigned int& lignes, unsigned int& colonnes)
 			cout << " ___";
 		}
 		cout << endl;
-	}
-}
-
-void show_position(Item** g, unsigned int& lignes, unsigned int& colonnes)
-{
-	// Cette fonction sert juste à vérifier si les cellules de la matrice 
-	// correspondent bien à leur position réelle. 
-
-	int position(-1);
-
-	cout << "cellule -> position -> contenu : " << endl << endl;
-
-	for (int l = 0; l < lignes; l++)
-	{
-		for (int c = 0; c < colonnes; c++)
-		{
-			position += 1;
-
-			cout << "grille[" << l << "][" << c << "]" << " -> " << position << " -> " << g[l][c].statut_case << endl;
-		}
 	}
 }
 
@@ -131,13 +111,14 @@ void game_lost(Item** g, unsigned int& lignes, unsigned int& colonnes)
 		for (int c = 0; c < colonnes; c++)
 		{
 			if (g[l][c].etat_case == MINE)
-				g[l][c].statut_case == DEVOILEE;
+				g[l][c].statut_case = DEVOILEE;
 		}
 	}	
 }
 
 void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& mine, unsigned int& prob)
 {
+	assert (mine < lignes * colonnes);
 	int position(-1);
 
 	for (int l = 0; l < lignes; l++)
@@ -180,6 +161,8 @@ void marquer_mine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& m
 }
 
 void compteMine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& caseRemplir) {
+
+	assert (caseRemplir < lignes * colonnes);
 
 	int position(-1);
 	int compte = 0;
@@ -284,99 +267,77 @@ void compteMine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& cas
 	}
 }
 
-void voisine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& demasque) {
+void voisine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& pos) {
+
+	assert (pos < colonnes * lignes);
+	assert (pos >= 0);
+
 	int position(-1);
 	for (int l = 0; l < lignes; l++)
 	{
 		for (int c = 0; c < colonnes; c++)
 		{
 			position += 1;
-			if (position == demasque)
+			if (position == pos)
 			{
 				c++;
 				position++;
-				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
+				if (c < colonnes && c >= 0 && l < lignes && l >= 0)
+				{
 					compteMine(g, lignes, colonnes, position);
-					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE || g[l][c].valeur_case != NEUTRE);
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case != CACHEE || g[l][c].valeur_case != NEUTRE);
 					
 					else { 
 						g[l][c].statut_case = DEVOILEE; 
 						voisine(g, lignes, colonnes, position); 
 					}
 				}
-
+			
+				c--;
+				position --;
 				l--;
-				position -= lignes;
-				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
-					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE || g[l][c].valeur_case != NEUTRE);
+				position -= colonnes;
+
+				if (c < colonnes && c >= 0 && l < lignes && l >= 0)
+				{ 
 					
-					else { 
-						voisine(g, lignes, colonnes, position);
+					compteMine(g, lignes, colonnes, position);
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case != CACHEE || g[l][c].valeur_case != NEUTRE);
+
+
+					else {
+						g[l][c].statut_case = DEVOILEE; 
+						voisine(g, lignes, colonnes, position); 
 					}
 				}
 
 				c--;
-				position--;
-				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
-					compteMine(g, lignes, colonnes, position);
-					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE || g[l][c].valeur_case != NEUTRE);
-					
-					else { 
-						g[l][c].statut_case = DEVOILEE; 
-						voisine(g, lignes, colonnes, position); 
-					}
-				}
-				
-				c--;
-				position--;
-				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
-					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE || g[l][c].valeur_case != NEUTRE);
-					
-					else { 
-						voisine(g, lignes, colonnes, position); 
-					}
-				}
-
+				position --;
 				l++;
-				position += lignes;
-				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
+				position += colonnes;
+
+				if (c < colonnes && c >= 0 && l < lignes && l >= 0)
+				{
 					compteMine(g, lignes, colonnes, position);
-					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE || g[l][c].valeur_case != NEUTRE);
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case != CACHEE || g[l][c].valeur_case != NEUTRE);
 					
 					else { 
-						g[l][c].statut_case = DEVOILEE; 
+						g[l][c].statut_case = DEVOILEE;
 						voisine(g, lignes, colonnes, position); 
 					}
 				}
-
+				c++;
+				position ++;
 				l++;
-				position += lignes;
-				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
-					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE || g[l][c].valeur_case != NEUTRE);
-					
-					else { 
-						voisine(g, lignes, colonnes, position); 
-					}
-				}
+				position += colonnes;
 
-				c++;
-				position++;
-				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
+				if (c < colonnes && c >= 0 && l < lignes && l >= 0)
+				{
 					compteMine(g, lignes, colonnes, position);
-					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE || g[l][c].valeur_case != NEUTRE);
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case != CACHEE || g[l][c].valeur_case != NEUTRE);
 					
 					else { 
 						g[l][c].statut_case = DEVOILEE; 
-						voisine(g, lignes, colonnes, position); 
-					}
-				}
-
-				c++;
-				position++;
-				if (c < colonnes && c >= 0 && l < lignes && l >= 0) {
-					if (g[l][c].etat_case == MINE || g[l][c].statut_case == MARQUEE || g[l][c].statut_case == DEVOILEE || g[l][c].valeur_case != NEUTRE);
-					
-					else { 
 						voisine(g, lignes, colonnes, position); 
 					}
 				}
@@ -384,11 +345,13 @@ void voisine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& demasq
 		}
 	}
 }
+	
 
 
 
 void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, int& demasque, unsigned int& prob)
-{
+{	
+	assert(demasque < lignes * colonnes);
 	int position(-1);
 	for (int l = 0; l < lignes; l++)
 	{
@@ -414,9 +377,11 @@ void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, int&
 				{
 					if (prob == 2) 
 					{ 
-						g[l][c].statut_case = DEVOILEE;
-						compteMine(g, lignes, colonnes, demasque);
-						voisine(g, lignes, colonnes, demasque);
+						if (g[l][c].statut_case != MARQUEE || g[l][c].statut_case != DEVOILEE || g[l][c].valeur_case == NEUTRE) { 
+								g[l][c].statut_case = DEVOILEE;
+								compteMine(g, lignes, colonnes, demasque);
+								voisine(g, lignes, colonnes, demasque);
+						}
 					}
 					else if (prob == 3) { 
 						cout << "game won";
@@ -532,53 +497,3 @@ int main()
 	system("pause");
 	return 0;
 }
-
-/*
-char lettre;
-int nombre;
-cin >> lettre >> nombre;
-
-cout << lettre << " " << nombre;
-
-
-
-
-	unsigned int lignes, colonnes, mine_marquee, nb_mines;
-	int case_demasquee;
-
-	Item** grille;
-
-	cout << "Lignes : ";
-	cin >> lignes;
-	cout << "Colonnes : ";
-	cin >> colonnes;
-
-	cout << "Nombre de mines a placer : ";
-	cin >> nb_mines;
-
-	placer_mine(grille, lignes, colonnes, nb_mines);
-
-	cout << "Marquer une mine : ";
-	cin >> mine_marquee;
-
-	cout << "Case a demasquer : ";
-	cin >> case_demasquee;
-
-	//cin >> lignes >> colonnes >> position;
-
-	assert(mine_marquee < lignes * colonnes);
-	assert(case_demasquee < lignes * colonnes);
-
-	cout << endl;
-	
-	//show_position(grille, lignes, colonnes);
-
-	marquer_mine(grille, lignes, colonnes, mine_marquee);
-
-	afficher_grille(grille, lignes, colonnes);
-
-	cout << endl;
-	demasquer_case(grille, lignes, colonnes, case_demasquee);
-	afficher_grille(grille, lignes, colonnes);
-
-	*/
