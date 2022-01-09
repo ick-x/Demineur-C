@@ -285,11 +285,17 @@ void voisine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& pos) {
 				if (c < colonnes && c >= 0 && l < lignes && l >= 0)
 				{
 					compteMine(g, lignes, colonnes, position);
-					if (g[l][c].etat_case == MINE || g[l][c].statut_case != CACHEE || g[l][c].valeur_case != NEUTRE);
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case != CACHEE);
 					
 					else { 
-						g[l][c].statut_case = DEVOILEE; 
-						voisine(g, lignes, colonnes, position); 
+
+						if (g[l][c].valeur_case != NEUTRE){
+							g[l][c].statut_case = DEVOILEE; 
+						}
+						else {
+							g[l][c].statut_case = DEVOILEE; 
+							voisine(g, lignes, colonnes, position); 
+						}
 					}
 				}
 			
@@ -302,12 +308,17 @@ void voisine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& pos) {
 				{ 
 					
 					compteMine(g, lignes, colonnes, position);
-					if (g[l][c].etat_case == MINE || g[l][c].statut_case != CACHEE || g[l][c].valeur_case != NEUTRE);
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case != CACHEE);
 
 
 					else {
-						g[l][c].statut_case = DEVOILEE; 
-						voisine(g, lignes, colonnes, position); 
+						if (g[l][c].valeur_case != NEUTRE){
+							g[l][c].statut_case = DEVOILEE; 
+						}
+						else {
+							g[l][c].statut_case = DEVOILEE; 
+							voisine(g, lignes, colonnes, position); 
+						} 
 					}
 				}
 
@@ -319,11 +330,16 @@ void voisine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& pos) {
 				if (c < colonnes && c >= 0 && l < lignes && l >= 0)
 				{
 					compteMine(g, lignes, colonnes, position);
-					if (g[l][c].etat_case == MINE || g[l][c].statut_case != CACHEE || g[l][c].valeur_case != NEUTRE);
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case != CACHEE);
 					
 					else { 
-						g[l][c].statut_case = DEVOILEE;
-						voisine(g, lignes, colonnes, position); 
+						if (g[l][c].valeur_case != NEUTRE){
+							g[l][c].statut_case = DEVOILEE; 
+						}
+						else {
+							g[l][c].statut_case = DEVOILEE; 
+							voisine(g, lignes, colonnes, position); 
+						} 
 					}
 				}
 				c++;
@@ -334,11 +350,16 @@ void voisine(Item **g, unsigned int& lignes, unsigned int& colonnes, int& pos) {
 				if (c < colonnes && c >= 0 && l < lignes && l >= 0)
 				{
 					compteMine(g, lignes, colonnes, position);
-					if (g[l][c].etat_case == MINE || g[l][c].statut_case != CACHEE || g[l][c].valeur_case != NEUTRE);
+					if (g[l][c].etat_case == MINE || g[l][c].statut_case != CACHEE);
 					
 					else { 
-						g[l][c].statut_case = DEVOILEE; 
-						voisine(g, lignes, colonnes, position); 
+						if (g[l][c].valeur_case != NEUTRE){
+							g[l][c].statut_case = DEVOILEE; 
+						}
+						else {
+							g[l][c].statut_case = DEVOILEE; 
+							voisine(g, lignes, colonnes, position); 
+						} 
 					}
 				}
 			}
@@ -378,9 +399,12 @@ void demasquer_case(Item **g, unsigned int& lignes, unsigned int& colonnes, int&
 					if (prob == 2) 
 					{ 
 						if (g[l][c].statut_case != MARQUEE || g[l][c].statut_case != DEVOILEE || g[l][c].valeur_case == NEUTRE) { 
-								g[l][c].statut_case = DEVOILEE;
-								compteMine(g, lignes, colonnes, demasque);
-								voisine(g, lignes, colonnes, demasque);
+							g[l][c].statut_case = DEVOILEE;
+							compteMine(g, lignes, colonnes, demasque);
+
+							if (g[l][c].valeur_case != NEUTRE);
+							else 
+								voisine(g, lignes, colonnes, position);
 						}
 					}
 					else if (prob == 3) { 
@@ -494,6 +518,6 @@ int main()
 {
 	problem();
 
-	system("pause");
+	//system("pause");
 	return 0;
 }
